@@ -21,6 +21,7 @@ def clean_data (
 ) -> Tuple[np.ndarray, pd.DataFrame]:
     """
     Drop IDs, redundant features, and labels
+    Returns tuple (labels, cleaned_data)
     """
     labels = None
     cleaned_data = raw_data.drop (DROP_FEATURES,
@@ -38,6 +39,7 @@ def engineer_data (
 ) -> pd.DataFrame:
     """
     Feature Engineering
+    Returns engineered dataframe
     """
     # Convert date to monthly circular representation
     months = pd.to_datetime (cleaned_data['Date']).dt.month
