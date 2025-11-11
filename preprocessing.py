@@ -5,14 +5,28 @@ import numpy as np
 ###### PARAMS ######
 # Data Cleaning
 LABEL_COL = 'Milk_Yield_L'
-DROP_FEATURES = ['Cattle_ID', 'Feed_Quantity_kg',
+ALL_FEATURES = ["Cattle_ID", "Breed", "Climate_Zone", "Management_System", 
+                "Age_Months", "Weight_kg", "Parity", "Lactation_Stage", 
+                "Days_in_Milk", "Feed_Type", "Feed_Quantity_kg",
+                "Feeding_Frequency", "Water_Intake_L", "Walking_Distance_km", 
+                "Grazing_Duration_hrs", "Rumination_Time_hrs", "Resting_Hours",
+                "Ambient_Temperature_C", "Humidity_percent", "Housing_Score",
+                "FMD_Vaccine", "Brucellosis_Vaccine", "HS_Vaccine", 
+                "BQ_Vaccine", "Anthrax_Vaccine", "IBR_Vaccine", "BVD_Vaccine",
+                "Rabies_Vaccine", "Previous_Week_Avg_Yield", 
+                "Body_Condition_Score", "Milking_Interval_hrs", "Date",
+                "Farm_ID", "Feed_Quantity_lb", "Mastitis", "Milk_Yield_L"]
+
+DROP_FEATURES = ['Cattle_ID',
+                 'Feed_Quantity_kg',
                  'Farm_ID',              # Probably too many options for one-hot
                  'Feed_Quantity_lb',     # TODO: Missing 10k, should impute
-                 'Housing_Score']        # TODO: Missing 6k, should impute
+                 'Housing_Score',        # TODO: Missing 6k, should impute
+                 ]
 
 # Feature Engineering
-ONE_HOT_FEATURES = ['Breed', 'Climate_Zone', 'Management_System',
-                    'Feed_Type', 'Lactation_Stage']
+CATEGORICAL_FEATURES = ['Breed', 'Climate_Zone', 'Management_System',
+                        'Feed_Type', 'Lactation_Stage']
 
 
 ######## FUNCTIONS ########
@@ -49,7 +63,7 @@ def engineer_data (
 
     # One Hot encode
     engineered_data = pd.get_dummies (engineered_data,
-                                      columns = ONE_HOT_FEATURES,
+                                      columns = CATEGORICAL_FEATURES,
                                       drop_first = True)
 
     return engineered_data
