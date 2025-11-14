@@ -1,6 +1,8 @@
 from typing import Tuple
 import pandas as pd
 import numpy as np
+from sklearn.impute import KNNImputer, SimpleImputer
+from sklearn.preprocessing import StandardScaler
 
 ###### PARAMS ######
 # Data Cleaning
@@ -19,9 +21,11 @@ ALL_FEATURES = ["Cattle_ID", "Breed", "Climate_Zone", "Management_System",
 
 DROP_FEATURES = ['Cattle_ID',
                  'Feed_Quantity_kg',
-                 'Farm_ID',              # Probably too many options for one-hot
-                 'Feed_Quantity_lb',     # TODO: Missing 10k, should impute
-                 'Housing_Score',        # TODO: Missing 6k, should impute
+                 'Farm_ID',                # Too many options for one-hot
+                 ]
+
+IMPUTE_FEATURES = ['Feed_Quantity_lb',     # Missing 10k
+                 'Housing_Score'           # Missing 6k
                  ]
 
 # Feature Engineering
@@ -38,13 +42,33 @@ def clean_data (
     Returns tuple (labels, cleaned_data)
     """
     labels = None
+
+    # Drop
     cleaned_data = raw_data.drop (DROP_FEATURES,
                                   axis = 1)
     if LABEL_COL in cleaned_data:
         labels = raw_data[LABEL_COL].values.ravel ()
         cleaned_data = cleaned_data.drop (LABEL_COL, axis = 1)
+    
+    '''
+    # KNN Impute with numeric features
+    numeric_features = cleaned_data.select_dtypes (include = [np.number]).columns
+    scaler = StandardScaler ()
+    scaled = scaler.fit_transform (cleaned_data[numeric_features])
 
-    # TODO: Impute?
+    imputer = KNNImputer (n_neighbors = 5)
+    imputed_scaled = imputer.fit_transform (scaled)
+    cleaned_data[numeric_features] = imputed_scaled
+
+    raw_data[IMPUTE_FEATURES] = imputer_knn.fit_transform (raw_data[IMPUTE_FEATURES])
+    '''
+    
+    # Mean impute
+    imputer_mean = SimpleImputer (missing_values = np.nan, strategy = 'median') 
+    for feature in IMPUTE_FEATURES:
+        raw_data[feature] = imputer_mean.fit_transform (raw_data[[feature]])
+
+    # Return
     return labels, cleaned_data
 
 
