@@ -1,8 +1,7 @@
 from typing import Tuple
 import pandas as pd
 import numpy as np
-from sklearn.impute import KNNImputer, SimpleImputer
-from sklearn.preprocessing import StandardScaler
+from scipy.stats import zscore
 
 ###### PARAMS ######
 # Data Cleaning
@@ -35,7 +34,8 @@ CATEGORICAL_FEATURES = ['Breed', 'Climate_Zone', 'Management_System',
 
 ######## FUNCTIONS ########
 def clean_data (
-    raw_data: pd.DataFrame
+    raw_data: pd.DataFrame,
+    is_train: bool = False
 ) -> Tuple[np.ndarray, pd.DataFrame]:
     """
     Drop IDs, redundant features, and labels
@@ -43,37 +43,23 @@ def clean_data (
     """
     labels = None
 
-    # Drop
+    # Drop useless features
     cleaned_data = raw_data.drop (DROP_FEATURES,
                                   axis = 1)
-    if LABEL_COL in cleaned_data:
-        labels = raw_data[LABEL_COL].values.ravel ()
+    
+    # Further processing for training set
+    if is_train or LABEL_COL in cleaned_data:
+        # Get labels
+        labels = cleaned_data[LABEL_COL].values.ravel ()
         cleaned_data = cleaned_data.drop (LABEL_COL, axis = 1)
-    
-    '''
-    # KNN Impute with numeric features
-    numeric_features = cleaned_data.select_dtypes (include = [np.number]).columns
-    scaler = StandardScaler ()
-    scaled = scaler.fit_transform (cleaned_data[numeric_features])
-
-    imputer = KNNImputer (n_neighbors = 5)
-    imputed_scaled = imputer.fit_transform (scaled)
-    cleaned_data[numeric_features] = imputed_scaled
-
-    raw_data[IMPUTE_FEATURES] = imputer_knn.fit_transform (raw_data[IMPUTE_FEATURES])
-    '''
-    
-    # Mean impute
-    imputer_mean = SimpleImputer (missing_values = np.nan, strategy = 'median') 
-    for feature in IMPUTE_FEATURES:
-        raw_data[feature] = imputer_mean.fit_transform (raw_data[[feature]])
 
     # Return
     return labels, cleaned_data
 
 
 def engineer_data (
-    cleaned_data: pd.DataFrame
+    cleaned_data: pd.DataFrame,
+    is_train: bool = False
 ) -> pd.DataFrame:
     """
     Feature Engineering
@@ -89,6 +75,15 @@ def engineer_data (
     engineered_data = pd.get_dummies (engineered_data,
                                       columns = CATEGORICAL_FEATURES,
                                       drop_first = True)
+
+    # Impute
+    if is_train:
+        # Drop records w/ missing cols
+        engineered_data = engineered_data.dropna ()
+
+        # Drop records w/ outlier labels (z-score)
+        # z = np.abs (zscore (engineered_data[LABEL_COL]))
+        # engineered_data = engineered_data[z < 3]
 
     return engineered_data
 
