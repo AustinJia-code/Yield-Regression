@@ -1,6 +1,5 @@
 scikit-learn
 numpy
 pandas
-catboost
 matplotlib
 torch
