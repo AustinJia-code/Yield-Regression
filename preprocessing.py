@@ -12,42 +12,43 @@ class RecordType (Enum):
 # Data Cleaning
 LABEL_COL = 'Milk_Yield_L'
 NUM_FEATURES = {'Cattle_ID':                    RecordType.DROP,
-                'Age_Months':                   RecordType.KEEP,
-                'Weight_kg':                    RecordType.KEEP,
-                'Parity':                       RecordType.KEEP,
-                'Days_in_Milk':                 RecordType.KEEP,
+                'Age_Months':                   RecordType.KEEP,    #
+                'Weight_kg':                    RecordType.KEEP,    #
+                'Parity':                       RecordType.KEEP,    #
+                'Days_in_Milk':                 RecordType.KEEP,    #
                 'Feed_Quantity_kg':             RecordType.DROP,
-                'Feed_Quantity_lb':             RecordType.KEEP,
+                'Feed_Quantity_lb':             RecordType.KEEP,    #
                 'Feeding_Frequency':            RecordType.DROP,
-                'Water_Intake_L':               RecordType.KEEP,
+                'Water_Intake_L':               RecordType.KEEP,    #
                 'Walking_Distance_km':          RecordType.DROP, 
                 'Grazing_Duration_hrs':         RecordType.DROP,
-                'Rumination_Time_hrs':          RecordType.KEEP,
+                'Rumination_Time_hrs':          RecordType.DROP,    #
                 'Resting_Hours':                RecordType.DROP,
-                'Ambient_Temperature_C':        RecordType.KEEP,
+                'Ambient_Temperature_C':        RecordType.KEEP,    #
                 'Humidity_percent':             RecordType.DROP,
                 'Housing_Score':                RecordType.DROP,
                 'FMD_Vaccine':                  RecordType.DROP,
                 'Brucellosis_Vaccine':          RecordType.DROP, 
                 'HS_Vaccine':                   RecordType.DROP, 
                 'BQ_Vaccine':                   RecordType.DROP,
-                'Anthrax_Vaccine':              RecordType.KEEP,
-                'IBR_Vaccine':                  RecordType.KEEP,
+                'Anthrax_Vaccine':              RecordType.KEEP,    #
+                'IBR_Vaccine':                  RecordType.KEEP,    #
                 'BVD_Vaccine':                  RecordType.DROP,
-                'Rabies_Vaccine':               RecordType.KEEP,
-                'Previous_Week_Avg_Yield':      RecordType.KEEP, 
+                'Rabies_Vaccine':               RecordType.KEEP,    #
+                'Previous_Week_Avg_Yield':      RecordType.KEEP,    # 
                 'Body_Condition_Score':         RecordType.DROP,
-                'Milking_Interval_hrs':         RecordType.KEEP,
-                'Date':                         RecordType.KEEP,
+                'Milking_Interval_hrs':         RecordType.KEEP,    #
                 'Farm_ID':                      RecordType.DROP,
-                'Mastitis':                     RecordType.KEEP,}
+                'Mastitis':                     RecordType.KEEP,}   #
 
 # Non-Dropped Categorical Features
 CAT_FEATURES = {'Breed':                        RecordType.DROP,
                 'Climate_Zone':                 RecordType.DROP,
                 'Management_System':            RecordType.DROP,
-                'Lactation_Stage':              RecordType.KEEP,
-                'Feed_Type':                    RecordType.DROP,}
+                'Lactation_Stage':              RecordType.KEEP,    #
+                'Feed_Type':                    RecordType.DROP,
+                'Date':                         RecordType.KEEP,    #
+                }
 
 
 ######## FUNCTIONS ########
@@ -96,7 +97,7 @@ def engineer_data (
     # Convert date to season
     months = pd.to_datetime (cleaned_data['Date']).dt.month
     engineered_data = cleaned_data.drop (columns = ['Date'])
-
+    
     def month_to_season (m):
         if m in [12, 1, 2]:
             return "Winter"
@@ -108,6 +109,9 @@ def engineer_data (
             return "Fall"
         
     engineered_data['Season'] = months.apply (month_to_season)
+    if ('Date' in CAT_FEATURES.keys ()):
+        CAT_FEATURES.pop ('Date')
+    CAT_FEATURES['Season'] = RecordType.KEEP
 
     # Impute
     impute_fts = [col for col in engineered_data.columns 
@@ -119,7 +123,7 @@ def engineer_data (
     # One Hot encode
     onehot_fts = [ft for ft, t in CAT_FEATURES.items () if t == RecordType.KEEP]
     engineered_data = pd.get_dummies (engineered_data,
-                                      columns = onehot_fts + ['Season'],
+                                      columns = onehot_fts,
                                       drop_first = True)
 
     # Drop records w/ missing cols
