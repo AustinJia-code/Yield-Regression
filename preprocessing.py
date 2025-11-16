@@ -98,6 +98,7 @@ def engineer_data (
     months = pd.to_datetime (cleaned_data['Date']).dt.month
     engineered_data = cleaned_data.drop (columns = ['Date'])
     
+    # split up months
     def month_to_season (m):
         if m in [12, 1, 2]:
             return "Winter"
