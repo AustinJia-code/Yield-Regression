@@ -22,7 +22,7 @@ NUM_FEATURES = {'Cattle_ID':                    RecordType.DROP,
                 'Water_Intake_L':               RecordType.KEEP,    #
                 'Walking_Distance_km':          RecordType.DROP, 
                 'Grazing_Duration_hrs':         RecordType.DROP,
-                'Rumination_Time_hrs':          RecordType.DROP,    #
+                'Rumination_Time_hrs':          RecordType.DROP,
                 'Resting_Hours':                RecordType.DROP,
                 'Ambient_Temperature_C':        RecordType.KEEP,    #
                 'Humidity_percent':             RecordType.DROP,
@@ -128,6 +128,10 @@ def engineer_data (
 
     # Drop records w/ missing cols
     engineered_data = engineered_data.dropna ()
+
+    # Flag extreme values
+    engineered_data['Water_Intake_L'] = engineered_data['Water_Intake_L'].clip (
+                                                        lower = 30, upper=  140)
 
     return engineered_data
 
