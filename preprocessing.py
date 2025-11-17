@@ -16,8 +16,8 @@ NUM_FEATURES = {'Cattle_ID':                    RecordType.DROP,
                 'Weight_kg':                    RecordType.KEEP,    #
                 'Parity':                       RecordType.KEEP,    #
                 'Days_in_Milk':                 RecordType.KEEP,    #
-                'Feed_Quantity_kg':             RecordType.DROP,
-                'Feed_Quantity_lb':             RecordType.KEEP,    #
+                'Feed_Quantity_kg':             RecordType.KEEP,    #
+                'Feed_Quantity_lb':             RecordType.DROP,
                 'Feeding_Frequency':            RecordType.DROP,
                 'Water_Intake_L':               RecordType.KEEP,    #
                 'Walking_Distance_km':          RecordType.DROP, 
@@ -37,7 +37,7 @@ NUM_FEATURES = {'Cattle_ID':                    RecordType.DROP,
                 'Rabies_Vaccine':               RecordType.KEEP,    #
                 'Previous_Week_Avg_Yield':      RecordType.KEEP,    # 
                 'Body_Condition_Score':         RecordType.DROP,
-                'Milking_Interval_hrs':         RecordType.KEEP,    #
+                'Milking_Interval_hrs':         RecordType.DROP,
                 'Farm_ID':                      RecordType.DROP,
                 'Mastitis':                     RecordType.KEEP,}   #
 
