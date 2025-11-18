@@ -4,7 +4,7 @@ import seaborn as sns
 from scipy.stats import ks_2samp, chi2_contingency
 import os
 
-# ================ LOAD DATA ==================
+
 
 train_path = 'data/in/cattle_data_train.csv'
 test_path = 'data/in/cattle_data_test.csv'
@@ -27,11 +27,8 @@ categorical_cols = train.select_dtypes(include=['object', 'category']).columns
 print("\nNumeric columns:", list(numeric_cols))
 print("Categorical columns:", list(categorical_cols))
 
-# ================ OUTPUT FOLDER ===============
 os.makedirs("distribution_plots", exist_ok=True)
 
-
-# ================ COMPARE NUMERIC FEATURES ================
 print("\n=== NUMERIC FEATURE DISTRIBUTION COMPARISON ===")
 for col in numeric_cols:
     plt.figure(figsize=(7,4))
@@ -49,8 +46,6 @@ for col in numeric_cols:
     ks_p = ks_2samp(train_col, test_col).pvalue
     print(f"{col}: KS p-value = {ks_p:.4f}")
 
-
-# ================ COMPARE CATEGORICAL FEATURES ================
 print("\n=== CATEGORICAL FEATURE DISTRIBUTION COMPARISON ===")
 for col in categorical_cols:
     plt.figure(figsize=(7,4))
